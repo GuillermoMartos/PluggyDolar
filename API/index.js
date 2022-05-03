@@ -2,6 +2,9 @@ const spy=require('puppeteer')
 
 console.log("start!")
 
+
+//las 3 funciones de scrap se podrían simplificar en una, pasarle el URL y hacerle switch case para la búsqueda de selectores por caso.
+
 async function get_dolarhoy(){
     const browser=await spy.launch()
     const page= await browser.newPage()
