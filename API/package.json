@@ -1,0 +1,14 @@
+{
+  "name": "pluggy",
+  "version": "1.0.0",
+  "description": "fecth and retrive dolar info",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "author": "Guillermo L. MARTOS",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^13.7.0"
+  }
+}
