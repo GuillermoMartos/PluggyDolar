@@ -4,11 +4,16 @@
   "description": "fecth and retrive dolar info",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon index.js"
+    "start": "nodemon app.js"
   },
   "author": "Guillermo L. MARTOS",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.20.0",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "express": "^4.18.1",
+    "morgan": "^1.10.0",
     "puppeteer": "^13.7.0"
   }
 }
