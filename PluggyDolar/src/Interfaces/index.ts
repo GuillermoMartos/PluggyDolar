@@ -10,7 +10,7 @@ export interface Promedio{
 }
 
 export interface Variacion{
-    buy_price_slippage:string,
-    sell_price_slippage:string,
-    source:string
+    buy_price_slippage?:string,
+    sell_price_slippage?:string,
+    source?:string
 }

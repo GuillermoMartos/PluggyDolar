@@ -18,9 +18,9 @@ async function get_dolarhoy(){
     await browser.close()
     
     return ({
-        "buy_price": precios[0],
-        "sell_price": precios[1],
-        "source": "https://dolarhoy.com/"
+        "buy_price": precios[0].slice(1),
+        "sell_price": precios[1].slice(1),
+        "source": "https://www.dolarhoy.com/"
       })
 }
 
@@ -53,8 +53,8 @@ async function get_cronista(){
     await browser.close()
    
     return ({
-        "buy_price": compra[0],
-        "sell_price": venta[0],
+        "buy_price": compra[0].slice(1),
+        "sell_price": venta[0].slice(1),
         "source": "https://www.cronista.com/MercadosOnline/moneda.html?id=ARSB"
       })
 }
@@ -72,12 +72,6 @@ function average_and_slippage(prices, action) {
     let sell = []
     //recorro el arreglo para normalizar datos primero
     for (i of prices) {
-        if (i.buy_price[0] == "$") {
-            i.buy_price = parseFloat(i.buy_price.slice(1))
-        }
-        if (i.sell_price[0] == "$") {
-            i.sell_price = parseFloat(i.sell_price.slice(1))
-        }
         buy.push(parseFloat(i.buy_price))
         sell.push(parseFloat(i.sell_price))
     }

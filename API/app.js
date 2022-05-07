@@ -21,9 +21,9 @@ async function cacheCleaner(){
     myCache.del('precios')
 }
 
-setInterval(function () {
-  cacheCleaner();
-}, 60000)
+// setInterval(()=>{
+//   cacheCleaner();
+// }, 60000)
 
 
 app.get('/quotes', async (req, res) => {
