@@ -8,7 +8,9 @@ const NodeCache = require('node-cache')
 const myCache = new NodeCache()
 
 
+
 const app = express();
+const port= process.env.PORT || 3001;
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: true }));
@@ -21,9 +23,9 @@ async function cacheCleaner(){
     myCache.del('precios')
 }
 
-// setInterval(()=>{
-//   cacheCleaner();
-// }, 60000)
+setInterval(()=>{
+  cacheCleaner();
+}, 60000)
 
 
 app.get('/quotes', async (req, res) => {
@@ -31,10 +33,20 @@ app.get('/quotes', async (req, res) => {
     res.status(200).send(myCache.get('precios'))
   }
   else {
-    let prices = await Promise.all([get_ambito(), get_cronista(), get_dolarhoy()])
-    .then(allData => allData)
-    myCache.set('precios', prices)
-    res.status(200).send(prices)
+    // try{
+      let prices = await Promise.all([get_ambito(), get_cronista(), get_dolarhoy()])
+      .then(allData => allData)
+      myCache.set('precios', prices)
+      res.status(200).send(prices)
+    // }
+    // catch(err){
+    //   console.log(err)
+    //   res.status(503).send([{
+    //     "buy_price": 0,
+    //     "sell_price": 0,
+    //     "source": "no source"
+    //   }])
+    // }
   }
 })
 
@@ -62,7 +74,7 @@ app.get('/slippage', async (req, res) => {
   }
 })
 
-app.listen(3001, async () => {
+app.listen(port, async () => {
 
-  console.log(`Conected to port 3001`);
+  console.log(`Conected to port ${port}`);
 });

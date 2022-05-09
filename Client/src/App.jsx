@@ -11,26 +11,34 @@ import './App.css'
 
 function App() {
   let [start, setStart] = useState(true)
-  let [loading, setLoading] = useState(true)
 
   const [precios, setPrecios] = useState(null);
   const [promedios, setPromedios] = useState(null);
   const [variacion, setVariacion] = useState(null);
+  const [hora, setHora] = useState(null);
+  const baseURL="https://dry-journey-63964.herokuapp.com/"
 
   useEffect(() => {
-    fetch("http://localhost:3001/quotes").then(res => res.json()).then(data => {
+    get_info()
+    const time = setInterval(get_info, 15000);
+    return () => clearInterval(time);
+  }, [])
+
+  const get_info = () => {
+    fetch(baseURL+"quotes").then(res => res.json()).then(data => {
       setPrecios(data)
     })
-      .then(() => fetch("http://localhost:3001/average").then(res => res.json()).then(data => {
+      .then(() => fetch(baseURL+"average").then(res => res.json()).then(data => {
         setPromedios(data)
       }))
-      .then(() => fetch("http://localhost:3001/slippage").then(res => res.json()).then(data => {
+      .then(() => fetch(baseURL+"slippage").then(res => res.json()).then(data => {
         setVariacion(data)
         setStart(!start)
       }))
-  }, [])
-
-
+      .then(() =>
+        setHora(new Date().toLocaleString('es-AR'))
+      )
+  }
 
 
 
@@ -38,11 +46,11 @@ function App() {
   return (
     <div className="main">
       <div className="nav">
-        <img src="https://pluggy.ai/_next/image?url=%2Flogo.png&w=128&q=75" alt="pluggy-logo" />
+        <a href="https://pluggy.ai/" target="_blank"><img src="https://pluggy.ai/_next/image?url=%2Flogo.png&w=128&q=75" alt="pluggy_logo" /></a>
       </div>
       {!start && !start ?
 
-        <div className="pruebita">
+        <div className="banner">
           <Carousel>
             <Carousel.Item interval={1000}>
               <img
@@ -115,11 +123,15 @@ function App() {
           <div className="dolar">
 
             {/* <p className="digital">PROMEDIO PRECIO COMPRA: </p> */}
-            <p className="digital">PROMEDIO COMPRA: {promedios.average_buy_price}</p>
+            <span className="digital" style={{ "lineHeight":"3em", "textAlign": "right" }}>actualización: {hora}</span>
+            <p className="digital">PROMEDIO COMPRA: ${promedios.average_buy_price}</p>
             {/* <p className="digital">PROMEDIO PRECIO VENTA: </p> */}
-            <p className="digital">PROMEDIO VENTA: {promedios.average_sell_price}</p>
-            <div style={{"align-self":" flex-end"}}>
-              <a href="https://pluggy.ai/" target="_blank"><img  src="https://pluggy.ai/_next/image?url=%2Flogo.png&w=128&q=75" alt="pluggy_logo" /></a>
+            <p className="digital">PROMEDIO VENTA: ${promedios.average_sell_price}</p>
+
+            <h5>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</h5>
+            <div style={{ "align-self": " flex-end" }}>
+
+            <a href="https://pluggy.ai/" target="_blank"><img src="https://pluggy.ai/_next/image?url=%2Flogo.png&w=128&q=75" alt="pluggy_logo" /></a>
             </div>
           </div>
           :

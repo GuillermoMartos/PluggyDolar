@@ -52,7 +52,7 @@ function Variacion({ data }) {
               >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="name" tick={{ fill: '#FFFFFF' }} />
-                <YAxis domain={[-1.50, 1.50]} tick={{ fontSize: 12, fill: '#FFFFFF' }} />
+                <YAxis domain={[-2, 2]} tick={{ fontSize: 12, fill: '#FFFFFF' }} />
                 <Tooltip />
                 <Legend />
                 <ReferenceLine y={0} stroke="#FFFFF" />
