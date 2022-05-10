@@ -84,6 +84,8 @@ h3{
 
 
 
+
+
 /* cuando loading es true css */
 
 body {
@@ -148,3 +150,21 @@ body {
     }
   }
   
+
+
+
+  /* ----MEDIA QUERY---- */
+/* ----MEDIA QUERY---- */
+/* ----MEDIA QUERY---- */
+
+  /* // X-Small devices (portrait phones, less than 576px) */
+@media (max-width: 575.98px) {
+  h4{
+    font-size: clamp(0.4rem, 1.5vw, 2rem); 
+}
+
+h3{
+    font-size: clamp(0.3rem, 1.5vw, 1rem); 
+    line-height: 0.2px;
+}
+}

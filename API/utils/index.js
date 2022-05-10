@@ -9,12 +9,7 @@ const spy=require('puppeteer')
 */
 
 async function get_dolarhoy(){
-    const browser=await spy.launch({
-        args: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-        ],
-      })
+    const browser=await spy.launch({ args: ['--no-sandbox'] })
     const page= await browser.newPage()
     await page.setDefaultNavigationTimeout(0);
     await page.goto("https://dolarhoy.com/")
@@ -31,12 +26,7 @@ async function get_dolarhoy(){
 }
 
 async function get_ambito(){
-    const browser=await spy.launch({
-        args: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-        ],
-      })
+    const browser=await spy.launch({ args: ['--no-sandbox'] })
     const page= await browser.newPage()
     await page.setDefaultNavigationTimeout(0);
     await page.goto("https://www.ambito.com/contenidos/dolar.html")
@@ -53,12 +43,7 @@ async function get_ambito(){
 }
 
 async function get_cronista(){
-    const browser=await spy.launch({
-        args: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-        ],
-      })
+    const browser=await spy.launch({ args: ['--no-sandbox'] })
     const page= await browser.newPage()
     await page.setDefaultNavigationTimeout(0);
     await page.goto("https://www.cronista.com/MercadosOnline/moneda.html?id=ARSB")

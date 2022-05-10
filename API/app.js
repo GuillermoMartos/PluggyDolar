@@ -1,6 +1,4 @@
 const express = require("express");
-const cookieParser = require("cookie-parser");
-const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const cors = require("cors");
 const { get_dolarhoy, get_ambito, get_cronista, average_and_slippage } = require("./utils/index")
@@ -14,9 +12,12 @@ const port= process.env.PORT || 3001;
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
-app.use(cors())
-
+app.use(cors({
+  origin: [
+    "https://pluggy-dolar.vercel.app",
+    "http://localhost:3000"
+  ]
+}))
 
 async function cacheCleaner(){
   // función asíncrona para que continue el proceso y que corro cada 60segs para borrar la caché. Estos datos los uso en las 3 rutas, así que primero consulto si están en la caché, de no estar, las pido y la caché se actualiza.
@@ -29,6 +30,7 @@ setInterval(()=>{
 
 
 app.get('/quotes', async (req, res) => {
+  console.log('Cookies: ', req.cookies)
   if (myCache.has('precios')) {
     res.status(200).send(myCache.get('precios'))
   }
@@ -42,8 +44,8 @@ app.get('/quotes', async (req, res) => {
     // catch(err){
     //   console.log(err)
     //   res.status(503).send([{
-    //     "buy_price": 0,
-    //     "sell_price": 0,
+    //     "buy_price": "0",
+    //     "sell_price": "0",
     //     "source": "no source"
     //   }])
     // }
