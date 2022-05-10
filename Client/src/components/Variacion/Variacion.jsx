@@ -18,7 +18,6 @@ function Variacion({ data }) {
 
 
   useEffect(() => {
-    console.log(data)
     for (let i of data) {
       setInfo(prevState => (
         [...prevState, {

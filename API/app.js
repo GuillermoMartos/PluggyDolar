@@ -6,7 +6,6 @@ const NodeCache = require('node-cache')
 const myCache = new NodeCache()
 
 
-
 const app = express();
 const port= process.env.PORT || 3001;
 app.use(express.json());
@@ -77,6 +76,5 @@ app.get('/slippage', async (req, res) => {
 })
 
 app.listen(port, async () => {
-
   console.log(`Conected to port ${port}`);
 });
