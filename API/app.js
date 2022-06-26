@@ -7,7 +7,7 @@ const myCache = new NodeCache()
 
 
 const app = express();
-const port= process.env.PORT || 3001;
+const port = process.env.PORT || 3001;
 app.use(express.json());
 app.use(morgan("dev"));
 app.use(express.urlencoded({ extended: true }));
@@ -18,12 +18,12 @@ app.use(cors({
   ]
 }))
 
-async function cacheCleaner(){
+async function cacheCleaner() {
   // función asíncrona para que continue el proceso y que corro cada 60segs para borrar la caché. Estos datos los uso en las 3 rutas, así que primero consulto si están en la caché, de no estar, las pido y la caché se actualiza.
-    myCache.del('precios')
+  myCache.del('precios')
 }
 
-setInterval(()=>{
+setInterval(() => {
   cacheCleaner();
 }, 60000)
 
@@ -35,10 +35,16 @@ app.get('/quotes', async (req, res) => {
   }
   else {
     // try{
+    try {
       let prices = await Promise.all([get_ambito(), get_cronista(), get_dolarhoy()])
-      .then(allData => allData)
+        .then(allData => allData)
       myCache.set('precios', prices)
       res.status(200).send(prices)
+    }
+    catch (error) {
+      console.log(error)
+      res.status(404).send({ error: 'values not found' })
+    }
     // }
     // catch(err){
     //   console.log(err)
@@ -56,10 +62,16 @@ app.get('/average', async (req, res) => {
     res.status(200).send(average_and_slippage(myCache.get('precios'), "average"))
   }
   else {
-    let prices = await Promise.all([get_ambito(), get_cronista(), get_dolarhoy()])
-      .then(allData => allData)
-    myCache.set('precios', prices)
-    res.status(200).send(average_and_slippage(prices, "average"))
+    try {
+      let prices = await Promise.all([get_ambito(), get_cronista(), get_dolarhoy()])
+        .then(allData => allData)
+      myCache.set('precios', prices)
+      res.status(200).send(average_and_slippage(prices, "average"))
+    }
+    catch (error) {
+      console.log(error)
+      res.status(404).send({ error: 'values not found' })
+    }
   }
 })
 
@@ -68,10 +80,16 @@ app.get('/slippage', async (req, res) => {
     res.status(200).send(average_and_slippage(myCache.get('precios'), "slippage"))
   }
   else {
-    let prices = await Promise.all([get_ambito(), get_cronista(), get_dolarhoy()])
-      .then(allData => allData)
-    myCache.set('precios', prices)
-    res.status(200).send(average_and_slippage(prices, "slippage"))
+    try {
+      let prices = await Promise.all([get_ambito(), get_cronista(), get_dolarhoy()])
+        .then(allData => allData)
+      myCache.set('precios', prices)
+      res.status(200).send(average_and_slippage(prices, "slippage"))
+    }
+    catch (error) {
+      console.log(error)
+      res.status(404).send({ error: 'values not found' })
+    }
   }
 })
 
