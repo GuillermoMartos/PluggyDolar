@@ -1,65 +1,98 @@
-const spy=require('puppeteer')
+const spy = require('puppeteer')
+const axios = require('axios')
 
- /*
-    FUNCIONES get_{source}: cada función get_{source} abre la página a scrapear y busca los datos de precios de compra y venta de dólar.
-    
-    * @param: no reciben parámetros
+/*
+   FUNCIONES get_{source}: cada función get_{source} abre la página a scrapear y busca los datos de precios de compra y venta de dólar. La búsqueda en ámbito es mediante http fetch.
+   
+   * @param: no reciben parámetros
 
-    * @return {Objeto}: objeto con tres propiedades: precios de compra y venta de dólar, y fuente (url)
+   * @return {Objeto}: objeto con tres propiedades: precios de compra y venta de dólar, y fuente (url)
 */
 
-async function get_dolarhoy(){
-    const browser=await spy.launch({ args: ['--no-sandbox'] })
-    const page= await browser.newPage()
+async function get_prices() {
+    console.log('fetching DolarHoy:')
+    const browser = await spy.launch({ args: ['--no-sandbox'] })
+    const page = await browser.newPage()
     await page.setDefaultNavigationTimeout(0);
-    await page.goto("https://dolarhoy.com/")
-    const precios= await page.evaluate(()=>{
-        return Array.from(document.querySelectorAll(".val")).map(x=>x.textContent)
-    });
-    await browser.close()
-    
-    return ({
-        "buy_price": precios[0].slice(1),
-        "sell_price": precios[1].slice(1),
-        "source": "https://www.dolarhoy.com/"
-      })
-}
+    console.log('scraping dolarhoy.com')
+    const urls = {
+        dolarHoy: "https://dolarhoy.com/",
+        ambito: 'https://mercados.ambito.com//dolar/informal/variacion',
+        cronista: "https://www.cronista.com/MercadosOnline/moneda.html?id=ARSB"
+    }
+    await page.goto(urls.dolarHoy)
+    try {
+        const preciosDolarHoyScrap = await page.evaluate(() => {
+            return Array.from(document.querySelectorAll(".val")).map(x => x.textContent)
+        });
 
-async function get_ambito(){
-    const browser=await spy.launch({ args: ['--no-sandbox'] })
-    const page= await browser.newPage()
-    await page.setDefaultNavigationTimeout(0);
-    await page.goto("https://www.ambito.com/contenidos/dolar.html")
-    const precios= await page.evaluate(()=>{
-        return Array.from(document.querySelectorAll(".value")).map(x=>x.textContent)
-    });
-    await browser.close()
-    
-    return ({
-        "buy_price": precios[1],
-        "sell_price": precios[2],
-        "source": "https://www.ambito.com/contenidos/dolar.html"
-      })
-}
+        var preciosDolarHoyResponse = {
+            "buy_price": preciosDolarHoyScrap[0].slice(1),
+            "sell_price": preciosDolarHoyScrap[1].slice(1),
+            "source": urls.dolarHoy
+        }
+        console.log('successing DolarHoy retrieve: ', preciosDolarHoyResponse)
+    }
+    catch (error) {
+        console.log('error fetching DolarHoy', error)
+        preciosDolarHoyResponse = {
+            "buy_price": 0,
+            "sell_price": 0,
+            "source": urls.dolarHoy
+        }
+    }
 
-async function get_cronista(){
-    const browser=await spy.launch({ args: ['--no-sandbox'] })
-    const page= await browser.newPage()
-    await page.setDefaultNavigationTimeout(0);
-    await page.goto("https://www.cronista.com/MercadosOnline/moneda.html?id=ARSB")
-    const compra= await page.evaluate(async()=>{
-        return Array.from(document.querySelectorAll(".buy-value")).map(x=>x.textContent)
-    });
-    const venta= await page.evaluate(async()=>{
-        return Array.from(document.querySelectorAll(".sell-value")).map(x=>x.textContent)
-    }); 
+    console.log('fetching Ambito:')
+    try {
+        const preciosAmbito = await axios.get(urls.ambito)
+
+        var preciosAmbitoResponse = {
+            "buy_price": preciosAmbito.data.compra,
+            "sell_price": preciosAmbito.data.venta,
+            "source": urls.ambito
+        }
+        console.log('successing Ambito retrieve: ', preciosAmbitoResponse)
+    }
+    catch (error) {
+        console.log('error fetching Ambito', error)
+        preciosAmbitoResponse = {
+            "buy_price": 0,
+            "sell_price": 0,
+            "source": urls.ambito
+        }
+    }
+
+    console.log('fetching Cronista:')
+    await page.goto(urls.cronista)
+    try {
+
+        const compraCronista = await page.evaluate(async () => {
+            return Array.from(document.querySelectorAll(".buy-value")).map(x => x.textContent)
+        });
+        const ventaCronsta = await page.evaluate(async () => {
+            return Array.from(document.querySelectorAll(".sell-value")).map(x => x.textContent)
+        });
+        var preciosCronistaResponse = {
+            "buy_price": compraCronista[0].slice(1),
+            "sell_price": ventaCronsta[0].slice(1),
+            "source": urls.cronista
+        }
+        console.log('successing Cronista retrieve: ', preciosCronistaResponse)
+    }
+    catch (error) {
+        console.log('error fetching Cronista', error)
+        preciosCronistaResponse = {
+            "buy_price": 0,
+            "sell_price": 0,
+            "source": urls.cronista
+        }
+    }
+
     await browser.close()
-   
-    return ({
-        "buy_price": compra[0].slice(1),
-        "sell_price": venta[0].slice(1),
-        "source": "https://www.cronista.com/MercadosOnline/moneda.html?id=ARSB"
-      })
+
+
+    res.status(200).send([preciosAmbitoResponse, preciosDolarHoyResponse, preciosCronistaResponse])
+
 }
 
 function average_and_slippage(prices, action) {
@@ -81,7 +114,7 @@ function average_and_slippage(prices, action) {
     //una vez normalizados los datos y agregados a un arreglo los precios de compra y venta, sumo todos los valores en la función reduce y luego los divido por la cantidad de elementos (saco promedio), y al final corto los decimales que tuviere hasta dos (toFixed(2))... Si la acción es "slippage" (ver switch-> case "slippage"), a cada objeto del arreglo inicial se le resta el precio del promediado tanto para compra como para venta.
     let average_buy_price = ((buy.reduce((a, b) => a + b)) / buy.length).toFixed(2)
     let average_sell_price = ((sell.reduce((a, b) => a + b)) / sell.length).toFixed(2)
-    
+
     switch (action) {
         case "average": {
             return {
@@ -90,22 +123,22 @@ function average_and_slippage(prices, action) {
             }
         }
         case "slippage": {
-            let arrayResponse=[]
-            let buy_price_slippage="";
-            let sell_price_slippage="";
-            for (i of prices){
-                buy_price_slippage= (parseFloat(i.buy_price)-average_buy_price).toFixed(2)
-                sell_price_slippage= (parseFloat(i.sell_price)-average_sell_price).toFixed(2)
-                arrayResponse.push({buy_price_slippage, sell_price_slippage, source:i.source})
+            let arrayResponse = []
+            let buy_price_slippage = "";
+            let sell_price_slippage = "";
+            for (i of prices) {
+                buy_price_slippage = (parseFloat(i.buy_price) - average_buy_price).toFixed(2)
+                sell_price_slippage = (parseFloat(i.sell_price) - average_sell_price).toFixed(2)
+                arrayResponse.push({ buy_price_slippage, sell_price_slippage, source: i.source })
             }
-            
+
             return Object.values(arrayResponse)
         }
         default: return
     }
 }
 
-module.exports=(
-    {get_dolarhoy, get_ambito, get_cronista, average_and_slippage}
+module.exports = (
+    { average_and_slippage, get_prices }
 )
 

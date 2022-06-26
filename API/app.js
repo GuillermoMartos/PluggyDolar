@@ -1,7 +1,7 @@
 const express = require("express");
 const morgan = require("morgan");
 const cors = require("cors");
-const { get_dolarhoy, get_ambito, get_cronista, average_and_slippage } = require("./utils/index")
+const { average_and_slippage, get_prices } = require("./utils/index")
 const NodeCache = require('node-cache')
 const myCache = new NodeCache()
 
@@ -36,14 +36,15 @@ app.get('/quotes', async (req, res) => {
   else {
     // try{
     try {
-      let prices = await Promise.all([get_ambito(), get_cronista(), get_dolarhoy()])
-        .then(allData => allData)
+      console.log('start fetching dollar prices...')
+      let prices = await get_prices()
       myCache.set('precios', prices)
+      console.log(prices)
       res.status(200).send(prices)
     }
     catch (error) {
       console.log(error)
-      res.status(404).send({ error: 'values not found' })
+      res.status(503).send({ error: 'values not found' })
     }
     // }
     // catch(err){

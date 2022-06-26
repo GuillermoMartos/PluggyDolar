@@ -20,7 +20,7 @@ function App() {
 
   useEffect(() => {
     get_info()
-    const time = setInterval(get_info, 15000);
+    const time = setInterval(get_info, 30000);
     return () => clearInterval(time);
   }, [])
 
