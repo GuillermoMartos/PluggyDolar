@@ -91,7 +91,7 @@ async function get_prices() {
     await browser.close()
 
 
-    res.status(200).send([preciosAmbitoResponse, preciosDolarHoyResponse, preciosCronistaResponse])
+    return ([preciosAmbitoResponse, preciosDolarHoyResponse, preciosCronistaResponse])
 
 }
 

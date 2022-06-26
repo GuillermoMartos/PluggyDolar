@@ -70,7 +70,7 @@ function App() {
                 <h3>Venta ${precios[0].sell_price}</h3>
               </Carousel.Caption>
             </Carousel.Item>
-            <Carousel.Item interval={700}>
+            <Carousel.Item interval={900}>
               <img
                 className="d-block w-100"
                 src={CronistaLogo}
@@ -82,7 +82,7 @@ function App() {
                 <h3>Venta ${precios[1].sell_price}</h3>
               </Carousel.Caption>
             </Carousel.Item>
-            <Carousel.Item interval={1000}>
+            <Carousel.Item interval={900}>
               <img
                 className="d-block w-100"
                 src={DolarHoyLogo}
@@ -94,7 +94,7 @@ function App() {
                 <h3>Venta ${precios[2].sell_price}</h3>
               </Carousel.Caption>
             </Carousel.Item>
-            <Carousel.Item interval={1000}>
+            <Carousel.Item interval={900}>
               <img
                 className="d-block w-100"
                 src={PromedioLogo}
