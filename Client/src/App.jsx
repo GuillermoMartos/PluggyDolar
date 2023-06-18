@@ -21,7 +21,7 @@ function App() {
 
   useEffect(() => {
     get_info();
-    const time = setInterval(get_info, 30000);
+    const time = setInterval(get_info, 180000);
     return () => clearInterval(time);
   }, []);
 
