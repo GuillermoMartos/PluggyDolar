@@ -12,6 +12,7 @@ const axios = require('axios')
 async function get_prices() {
     const browser = await spy.launch({ args: ['--no-sandbox'] })
     const page = await browser.newPage()
+    await page.setUserAgent("Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/95.0.4638.69 Safari/537.36")
     page.setDefaultNavigationTimeout(0);
     console.log('scraping dolarhoy.com')
     const urls = {
