@@ -61,10 +61,10 @@ app.get('/quotes', async (req, res) => {
   else {
     try {
       console.log('start fetching dollar prices...')
-      let prices = await get_prices()
-      myCache.set('precios', prices)
-      console.log(prices)
-      res.status(200).send(prices)
+      let data = await get_prices()
+      myCache.set('precios', data.precios)
+      console.log(JSON.stringify(data), 'all data retrieved')
+      res.status(200).send(data)
     }
     catch (error) {
       console.log(error)
