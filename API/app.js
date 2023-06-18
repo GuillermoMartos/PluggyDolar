@@ -29,7 +29,6 @@ setInterval(() => {
 
 
 app.get('/quotes', async (req, res) => {
-  console.log('Cookies: ', req.cookies)
   if (myCache.has('precios')) {
     res.status(200).send(myCache.get('precios'))
   }

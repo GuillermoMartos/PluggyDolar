@@ -16,7 +16,7 @@ function App() {
   const [promedios, setPromedios] = useState(null);
   const [variacion, setVariacion] = useState(null);
   const [hora, setHora] = useState(null);
-  const baseURL = "https://dry-journey-63964.herokuapp.com/"
+  const baseURL = document.URL.includes('localhost') ? 'http://localhost:3001/' : "https://dolarscrapper.onrender.com"
 
   useEffect(() => {
     get_info()
