@@ -27,13 +27,38 @@ setInterval(() => {
   cacheCleaner();
 }, 60000)
 
+app.use((req, res, next) => {
+  const originURL = req.headers.origin;
+  const baseUrl = 'https://pluggy-dolar.vercel.app';
+  const devLocalhost = 'http://localhost:3000'
+
+  if (originURL?.includes(baseUrl) || originURL?.includes(devLocalhost)) {
+    console.log('te tomé la url', originURL)
+    res.setHeader('Access-Control-Allow-Origin', originURL);
+  }
+  else if (req.url === 'https://redagmailerapi.onrender.com/client/ping-alive/cron') {
+    console.log('bienvenido ping monitor', req.url)
+    res.setHeader('Access-Control-Allow-Origin', req.url); // update to match the domain you will make the request from
+  }
+  else {
+    console.log('no tomé la url y te voy a devolver la baseUrl. Tu url fue:', originURL)
+    console.log(req.url, 'es tu url')
+    console.log(JSON.stringify(req.headers), 'son los headers')
+    res.setHeader('Access-Control-Allow-Origin', baseUrl); // update to match the domain you will make the request from
+  }
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
+  next();
+});
 
 app.get('/quotes', async (req, res) => {
   if (myCache.has('precios')) {
-    res.status(200).send(myCache.get('precios'))
+    const precios = myCache.get('precios')
+    const promedios = average_and_slippage(precios, 'average')
+    const variacion = average_and_slippage(precios, 'slippage')
+    res.status(200).send({precios, promedios, variacion})
   }
   else {
-    // try{
     try {
       console.log('start fetching dollar prices...')
       let prices = await get_prices()
@@ -44,51 +69,6 @@ app.get('/quotes', async (req, res) => {
     catch (error) {
       console.log(error)
       res.status(503).send({ error: 'values not found' })
-    }
-    // }
-    // catch(err){
-    //   console.log(err)
-    //   res.status(503).send([{
-    //     "buy_price": "0",
-    //     "sell_price": "0",
-    //     "source": "no source"
-    //   }])
-    // }
-  }
-})
-
-app.get('/average', async (req, res) => {
-  if (myCache.has('precios')) {
-    res.status(200).send(average_and_slippage(myCache.get('precios'), "average"))
-  }
-  else {
-    try {
-      let prices = await Promise.all([get_ambito(), get_cronista(), get_dolarhoy()])
-        .then(allData => allData)
-      myCache.set('precios', prices)
-      res.status(200).send(average_and_slippage(prices, "average"))
-    }
-    catch (error) {
-      console.log(error)
-      res.status(404).send({ error: 'values not found' })
-    }
-  }
-})
-
-app.get('/slippage', async (req, res) => {
-  if (myCache.has('precios')) {
-    res.status(200).send(average_and_slippage(myCache.get('precios'), "slippage"))
-  }
-  else {
-    try {
-      let prices = await Promise.all([get_ambito(), get_cronista(), get_dolarhoy()])
-        .then(allData => allData)
-      myCache.set('precios', prices)
-      res.status(200).send(average_and_slippage(prices, "slippage"))
-    }
-    catch (error) {
-      console.log(error)
-      res.status(404).send({ error: 'values not found' })
     }
   }
 })

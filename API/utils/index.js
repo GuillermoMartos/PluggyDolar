@@ -89,10 +89,10 @@ async function get_prices() {
     }
 
     await browser.close()
-
-
-    return ([preciosAmbitoResponse, preciosDolarHoyResponse, preciosCronistaResponse])
-
+    const precios = [preciosAmbitoResponse, preciosDolarHoyResponse, preciosCronistaResponse]
+    const promedios = average_and_slippage(precios, 'average')
+    const variacion = average_and_slippage(precios, 'slippage')
+    return ({precios, promedios, variacion})
 }
 
 function average_and_slippage(prices, action) {
@@ -134,7 +134,7 @@ function average_and_slippage(prices, action) {
 
             return Object.values(arrayResponse)
         }
-        default: return
+        default: throw Error
     }
 }
 

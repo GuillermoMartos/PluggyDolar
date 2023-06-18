@@ -27,7 +27,7 @@ function App() {
 
   const fecthOptions = {
     mode: "cors",
-    headers: { origin: "https://pluggy-dolar.vercel.app/" },
+    headers: { origin: "https://pluggy-dolar.vercel.app" },
   };
 
   const get_info = () => {
@@ -35,23 +35,12 @@ function App() {
       fetch(baseURL + "quotes", fecthOptions)
         .then((res) => res.json())
         .then((data) => {
-          setPrecios(data);
+          console.log('viene la data: ', data)
+          setPrecios(data.precios);
+          setPromedios(data.promedios);
+          setVariacion(data.variacion);
+          setStart(!start);
         })
-        .then(() =>
-          fetch(baseURL + "average", fecthOptions)
-            .then((res) => res.json())
-            .then((data) => {
-              setPromedios(data);
-            })
-        )
-        .then(() =>
-          fetch(baseURL + "slippage", fecthOptions)
-            .then((res) => res.json())
-            .then((data) => {
-              setVariacion(data);
-              setStart(!start);
-            })
-        )
         .then(() => setHora(new Date().toLocaleString("es-AR")));
     } catch (error) {
       alert("try again later, dollar sources off");
