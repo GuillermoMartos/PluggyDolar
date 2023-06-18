@@ -10,10 +10,9 @@ const axios = require('axios')
 */
 
 async function get_prices() {
-    console.log('fetching DolarHoy:')
     const browser = await spy.launch({ args: ['--no-sandbox'] })
     const page = await browser.newPage()
-    await page.setDefaultNavigationTimeout(0);
+    page.setDefaultNavigationTimeout(0);
     console.log('scraping dolarhoy.com')
     const urls = {
         dolarHoy: "https://dolarhoy.com/",

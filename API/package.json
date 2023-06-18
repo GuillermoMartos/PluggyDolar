@@ -4,7 +4,7 @@
   "description": "fecth and retrive dolar info",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "npm install && nodemon app.js"
   },
   "author": "Guillermo L. MARTOS",
   "license": "ISC",
